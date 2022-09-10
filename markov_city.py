@@ -1,4 +1,6 @@
 import numpy as np
+import math
+import bpy
 
 class MarkovCity:
     
@@ -45,12 +47,49 @@ class MarkovCity:
 
 def main():
     city = MarkovCity({
-        0: {0: 0.3, 1: 0.2, 2: 0.3, 3: 0.2},
-        1: {0: 0.3, 1: 0.2, 2: 0.3, 3: 0.2},
-        2: {0: 0.3, 1: 0.2, 2: 0.3, 3: 0.2},
-        3: {0: 0.3, 1: 0.2, 2: 0.3, 3: 0.2}
+        0: {0: 0.5, 1: 0.2, 2: 0.15, 3: 0.15},
+        1: {0: 0.1, 1: 0.5, 2: 0.2, 3: 0.2},
+        2: {0: 0.1, 1: 0.1, 2: 0.5, 3: 0.3},
+        3: {0: 0.1, 1: 0.2, 2: 0.2, 3: 0.5}
     })
-    print(city.get_building_heights(3, 3))
+    
+    plane_size = 50
+    num_rows = plane_size // 10
+    cell_width = 10
+    
+    building_heights = city.get_building_heights(num_rows, num_rows)
+
+    
+    # Delete all objects in the scene that aren't cameras or lights
+    bpy.ops.object.mode_set(mode = 'OBJECT')
+    skip_delete_objects = set(['CAMERA', 'LIGHT'])
+
+    for o in bpy.context.scene.objects:
+        if o.type in skip_delete_objects:
+            o.select_set(False)
+        else:
+            o.select_set(True)
+
+    bpy.ops.object.delete() 
+    
+    for r in range(num_rows):
+        for c in range(num_rows):
+            current_height = building_heights[r][c] * 5
+            current_num_sides = building_heights[r][c]
+            if current_height == 0:
+                continue
+            bpy.ops.mesh.primitive_cylinder_add(location=(r * cell_width - (plane_size / 2 - 5), c * cell_width - (plane_size / 2 - 5), current_height / 2.0), vertices = current_num_sides * 3 , radius = 4.0, depth = current_height, rotation = (0, 0, math.pi / 4))
+            
+            # Make and assign new material for current building
+            mat = bpy.data.materials.new('Material' + str(r) + str(c))
+            mat.diffuse_color = (current_num_sides / 4, current_num_sides / 4, current_num_sides / 4, 1)    
+            bpy.context.object.data.materials.append(mat)
+            
+    # Create the base and add color to it
+    bpy.ops.mesh.primitive_plane_add(size = plane_size, location = (0, 0, 0))
+    mat = bpy.data.materials.new('Base')
+    mat.diffuse_color = (0.1, 0.1, 0.1, 1)    
+    bpy.context.object.data.materials.append(mat)
 
 
 if __name__ == '__main__':
