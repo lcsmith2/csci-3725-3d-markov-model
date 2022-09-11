@@ -12,6 +12,7 @@ class MarkovCity:
         """
         self.transition_matrix = transition_matrix
         self.heights = list(transition_matrix.keys())
+        self.max_height = max(self.heights)
 
 
     def get_next_height(self, current_height):
@@ -44,53 +45,92 @@ class MarkovCity:
 
         return building_heights
 
+    
+    def clear_city(self):
+        """
+        Removes the current city from the scene.
+        """
+        bpy.ops.object.mode_set(mode = 'OBJECT')
+        skip_delete_objects = set(['CAMERA', 'LIGHT'])
+
+        # Delete all objects in the scene that aren't cameras or lights
+        for o in bpy.context.scene.objects:
+            if o.type in skip_delete_objects:
+                o.select_set(False)
+            else:
+                o.select_set(True)
+
+        bpy.ops.object.delete() 
+
+
+    def create_city(self, base_size, cell_width = 10, height_scale_factor = 3):
+        """
+        Creates a city in Blender where the heights are based off of the transition matrix. Each cell contains
+        a building, and there are (base_size // cell_width) by (base_size // cell_width) buildings in the city.
+        Args:
+            base_size (int): the width (and height) of the square city base
+            cell_width (int): the width of each square cell within the grid
+            height_scale_factor (int): the factor each building height will be scaled by
+        """
+        self.clear_city()
+        num_rows = base_size // cell_width
+        
+        building_heights = self.get_building_heights(num_rows, num_rows)
+        
+        for r in range(num_rows):
+            for c in range(num_rows):
+                current_height = building_heights[r][c] * height_scale_factor
+                current_num_sides = building_heights[r][c]
+                if current_height == 0:
+                    continue
+                bpy.ops.mesh.primitive_cylinder_add(
+                    location = (
+                        r * cell_width - (base_size / 2 - (cell_width / 2)), 
+                        c * cell_width - (base_size / 2 - (cell_width / 2)), 
+                        current_height / 2
+                    ), 
+                    vertices = current_num_sides , 
+                    radius = cell_width / 2 - cell_width / 10, 
+                    depth = current_height, 
+                    rotation = (0, 0, math.pi / 4)
+                )
+                
+                # Create and assign new material for current building
+                mat = bpy.data.materials.new('Material' + str(r) + str(c))
+                color_value = current_num_sides / self.max_height
+                mat.diffuse_color = (color_value, color_value, color_value, 1)    
+                bpy.context.object.data.materials.append(mat)
+            
+        # Create the base and add color to it
+        bpy.ops.mesh.primitive_plane_add(size = base_size, location = (0, 0, 0))
+        mat = bpy.data.materials.new('Base')
+        mat.diffuse_color = (0.1, 0.1, 0.1, 1)    
+        bpy.context.object.data.materials.append(mat)
+
 
 def main():
-    city = MarkovCity({
+    city1 = MarkovCity({
         0: {0: 0.5, 1: 0.2, 2: 0.15, 3: 0.15},
         1: {0: 0.1, 1: 0.5, 2: 0.2, 3: 0.2},
         2: {0: 0.1, 1: 0.1, 2: 0.5, 3: 0.3},
         3: {0: 0.1, 1: 0.2, 2: 0.2, 3: 0.5}
     })
-    
-    plane_size = 50
-    num_rows = plane_size // 10
-    cell_width = 10
-    
-    building_heights = city.get_building_heights(num_rows, num_rows)
 
+    city = MarkovCity({
+        0: {0: 0.1, 1: 0.1, 2: 0.1, 3: 0.1, 4: 0.1, 5: 0.1, 6: 0.1, 7: 0.1, 8: 0.1, 9: 0.1},
+        1: {0: 0.1, 1: 0.1, 2: 0.1, 3: 0.1, 4: 0.1, 5: 0.1, 6: 0.1, 7: 0.1, 8: 0.1, 9: 0.1},
+        2: {0: 0.1, 1: 0.1, 2: 0.1, 3: 0.1, 4: 0.1, 5: 0.1, 6: 0.1, 7: 0.1, 8: 0.1, 9: 0.1},
+        3: {0: 0.1, 1: 0.1, 2: 0.1, 3: 0.1, 4: 0.1, 5: 0.1, 6: 0.1, 7: 0.1, 8: 0.1, 9: 0.1},
+        4: {0: 0.1, 1: 0.1, 2: 0.1, 3: 0.1, 4: 0.1, 5: 0.1, 6: 0.1, 7: 0.1, 8: 0.1, 9: 0.1},
+        5: {0: 0.1, 1: 0.1, 2: 0.1, 3: 0.1, 4: 0.1, 5: 0.1, 6: 0.1, 7: 0.1, 8: 0.1, 9: 0.1},
+        6: {0: 0.1, 1: 0.1, 2: 0.1, 3: 0.1, 4: 0.1, 5: 0.1, 6: 0.1, 7: 0.1, 8: 0.1, 9: 0.1},
+        7: {0: 0.1, 1: 0.1, 2: 0.1, 3: 0.1, 4: 0.1, 5: 0.1, 6: 0.1, 7: 0.1, 8: 0.1, 9: 0.1},
+        8: {0: 0.1, 1: 0.1, 2: 0.1, 3: 0.1, 4: 0.1, 5: 0.1, 6: 0.1, 7: 0.1, 8: 0.1, 9: 0.1},
+        9: {0: 0.1, 1: 0.1, 2: 0.1, 3: 0.1, 4: 0.1, 5: 0.1, 6: 0.1, 7: 0.1, 8: 0.1, 9: 0.1}})
+
+    city.create_city(100)
     
-    # Delete all objects in the scene that aren't cameras or lights
-    bpy.ops.object.mode_set(mode = 'OBJECT')
-    skip_delete_objects = set(['CAMERA', 'LIGHT'])
-
-    for o in bpy.context.scene.objects:
-        if o.type in skip_delete_objects:
-            o.select_set(False)
-        else:
-            o.select_set(True)
-
-    bpy.ops.object.delete() 
     
-    for r in range(num_rows):
-        for c in range(num_rows):
-            current_height = building_heights[r][c] * 5
-            current_num_sides = building_heights[r][c]
-            if current_height == 0:
-                continue
-            bpy.ops.mesh.primitive_cylinder_add(location=(r * cell_width - (plane_size / 2 - 5), c * cell_width - (plane_size / 2 - 5), current_height / 2.0), vertices = current_num_sides * 3 , radius = 4.0, depth = current_height, rotation = (0, 0, math.pi / 4))
-            
-            # Make and assign new material for current building
-            mat = bpy.data.materials.new('Material' + str(r) + str(c))
-            mat.diffuse_color = (current_num_sides / 4, current_num_sides / 4, current_num_sides / 4, 1)    
-            bpy.context.object.data.materials.append(mat)
-            
-    # Create the base and add color to it
-    bpy.ops.mesh.primitive_plane_add(size = plane_size, location = (0, 0, 0))
-    mat = bpy.data.materials.new('Base')
-    mat.diffuse_color = (0.1, 0.1, 0.1, 1)    
-    bpy.context.object.data.materials.append(mat)
-
 
 if __name__ == '__main__':
     main()
