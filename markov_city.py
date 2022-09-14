@@ -8,7 +8,7 @@ class MarkovCity:
     are based on a Markov model, and each building's color is set with a separate Markov model. In addition, shorter
     buildings are slightly lighter in color and taller buildings are a bit darker.
     """
-    # Affects how much space is between each building
+    # Affects how much space is between each building. A higher value corresponds to there being less space between buildings.
     PADDING_FACTOR = 10 
     # Controls how strong of an influence the height of a building has on the shade of its color. The smaller the value, 
     # the larger the influence.
@@ -220,7 +220,7 @@ def main():
         (1, 0.7, 0.07): {(0.9, 0.4, 0.4): 0.3, (0.16, 0.46, 0.9): 0.4, (1, 0.7, 0.07): 0.3}
     }
 
-    city = MarkovCity(favor_mid_heights_9, height_prior_vector, colors, colors_prior_vector)
+    city = MarkovCity(equal_prob_height_9, height_prior_vector, colors, colors_prior_vector)
 
     city.create_city(100)
     

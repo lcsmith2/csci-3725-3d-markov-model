@@ -3,8 +3,27 @@ This repository contains a script for a Markov City System. It generates a "city
 <br />
 <br />
 
+## Running The Script
+The script is run inside Blender to generate a scene. To run it, open Blender and go to the text editor. Within the text editor,
+open the script that was downloaded from this repository. Then, click the run script button. The city should have been added to the scene, and it can be viewed in the 3D Viewport.
+<br />
+<br />
+
 ## Documentation
-The `markov_city.py` file contains everything that is needed to run the script in Blender. It contains the `MarkovCity` class, which contains the Markov models and methods for creating the city with them. The file also has a `main()` function. This is where Markov models and a `MarkovCity` object are initialized and the instance is called to create a city. The `create_city()` method has the following parameters:
+The `markov_city.py` file contains everything that is needed to run the script in Blender. It contains the `MarkovCity` class, which contains the Markov models and methods for creating the city with them. The file also has a `main()` function. This is 
+where Markov models and a `MarkovCity` object are initialized and the instance is called to create a city. 
+
+The constructor for the `MarkovCity` class has the following parameters (all are required):
+* height_transition_matrix (dict): height transition probabilities for the Markov model 
+* height_prior_vector (dict): the initial state vector for heights
+* color_transition_matrix (dict): color transition probabilities for the Markov model
+* color_prior_vector (dict): the initial state vector for color
+<br />
+
+The Markov Models section contains more details about these parameters.
+<br />
+
+The `create_city()` method has the following parameters:
 <br />
 * Required
     - base_size (int): the width (and height) of the square city base
@@ -52,7 +71,4 @@ Note in these examples how for each row in the transition matrix and each value 
 <br />
 <br />
 
-## Running The Script
-The script is run inside Blender to generate a scene. To run it, open Blender and go to the text editor. Within the text editor,
-open the script that was downloaded from this repository. Then, click the run script button. The city should have been added to the scene, and it can be viewed in the 3D Viewport.
 
