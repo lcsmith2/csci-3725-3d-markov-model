@@ -37,7 +37,7 @@ class MarkovCity:
         """
         Determines the height of the next building based on the height of the current one.
         Args:
-            current_height (int): the height of the current building
+            current_height (float): the height of the current building
         """
         return np.random.choice(
             self.heights, 
