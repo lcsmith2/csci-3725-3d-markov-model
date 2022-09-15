@@ -39,10 +39,15 @@ The Markov Models section contains more details about these parameters.
 The `create_city()` method has the following parameters:
 <br />
 * Required
-    - base_size (int): the width (and height) of the square city base
+    - base_size (float): the width (and height) of the square city base
 * Optional
-    - cell_width (int): the width of each square cell within the grid (default value is 10)
+    - cell_width (float): the width of each square cell within the grid (default value is 10)
     - height_scale_factor (float): the factor each building height will be scaled by (default value is 2.5)
+<br />
+
+Note: It is best for `base_size` to be divisible by `cell_width` for the spacing between buildings to be consistent across the base. The city will still be created if this is not the case, but then it will not be centered on the base.
+<br />
+<br />
 
 These parameters serve as an additional way to modify the way the city is generated even when using the same Markov models. It is
 recommended to keep the `base_size` relatively small (less than 200) since the script can take a long time to run for larger cities. The `PADDING_FACTOR`, `HEIGHT_FACTOR_FOR_COLOR_SHADE`, and `BASE_COLOR` class constants can also be modified to change the padding between each building, the influence of height on color shade, and the base color respectively.

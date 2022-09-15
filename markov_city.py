@@ -14,10 +14,12 @@ class MarkovCity:
     # the larger the influence.
     HEIGHT_FACTOR_FOR_COLOR_SHADE = 3 
     BASE_COLOR = (0.1, 0.1, 0.1, 1)
+
     
     def __init__(self, height_transition_matrix, height_prior_vector, color_transition_matrix, color_prior_vector):
         """
-        Uses a Markov model to generate a small-scale city in Blender.
+        Uses Markov models to generate a small-scale city in Blender. One model is used for a building's height and
+        number of sides, and the other is used for determining the color of each building.
         Args:
             height_transition_matrix (dict): height transition probabilities for the Markov model 
             height_prior_vector (dict): the initial state vector for heights
@@ -58,7 +60,6 @@ class MarkovCity:
             p = [self.color_transition_matrix[current_color][next_color] for next_color in self.colors] 
         )
         return self.colors[index]
-
 
 
     def get_building_info(self, num_rows, num_cols):
@@ -148,15 +149,15 @@ class MarkovCity:
     def create_city(self, base_size, cell_width = 10, height_scale_factor = 2.5):
         """
         Creates a city in Blender where the heights are based off of the transition matrix. Each cell contains
-        a building, and there are (base_size // cell_width) by (base_size // cell_width) buildings in the city.
+        a building, and there are floor(base_size / cell_width) by floor(base_size / cell_width) buildings in the city.
         Args:
-            base_size (int): the width (and height) of the square city base
-            cell_width (int): the width of each square cell within the grid
+            base_size (float): the width (and height) of the square city base
+            cell_width (float): the width of each square cell within the grid
             height_scale_factor (float): the factor each building height will be scaled by
         """
         self.clear_city()
 
-        num_rows = base_size // cell_width
+        num_rows = int(base_size / cell_width)
         building_padding = cell_width / MarkovCity.PADDING_FACTOR
         displacement = base_size / 2 - (cell_width / 2)    
         building_info = self.get_building_info(num_rows, num_rows)
